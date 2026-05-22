@@ -2,7 +2,7 @@ import { z } from 'zod'
 
 const envSchema = z.object({
   VITE_API_URL: z
-    .string({ required_error: 'VITE_API_URL is required' })
+    .string({ error: 'VITE_API_URL is required' })
     .min(1, 'VITE_API_URL must not be empty'),
   MODE: z.string().default('development'),
   DEV: z.boolean().default(true),
@@ -18,11 +18,11 @@ function validateEnv() {
   })
 
   if (!result.success) {
-    const messages = Object.entries(result.error.flatten().fieldErrors)
-      .map(([key, msgs]) => `  • ${key}: ${msgs?.join(', ')}`)
+    const messages = result.error.issues
+      .map((issue) => `  • ${issue.path.join('.')}: ${issue.message}`)
       .join('\n')
 
-    throw new Error(`\n❌ Invalid environment variables:\n${messages}\n\nCheck your .env file.\n`)
+    throw new Error(`\n Invalid environment variables:\n${messages}\n\nCheck your .env file.\n`)
   }
 
   return result.data

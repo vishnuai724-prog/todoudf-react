@@ -26,11 +26,11 @@ export class ApiError extends Error {
   }
 
   get isUnauthorized() { return this.status === 401 }
-  get isForbidden()    { return this.status === 403 }
-  get isNotFound()     { return this.status === 404 }
-  get isConflict()     { return this.status === 409 }
-  get isValidation()   { return this.status === 422 }
-  get isServerError()  { return this.status >= 500 }
+  get isForbidden() { return this.status === 403 }
+  get isNotFound() { return this.status === 404 }
+  get isConflict() { return this.status === 409 }
+  get isValidation() { return this.status === 422 }
+  get isServerError() { return this.status >= 500 }
 
   static fromAxiosError(err: AxiosError): ApiError {
     const payload = err.response?.data as ApiErrorPayload | undefined

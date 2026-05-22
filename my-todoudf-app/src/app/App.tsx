@@ -23,8 +23,7 @@ export default function App() {
         <BrowserRouter>
           <AppRoutes />
           <Toaster
-            position="bottom-right"
-            theme="dark"
+            position="top-right"
             richColors
             closeButton
             toastOptions={{
