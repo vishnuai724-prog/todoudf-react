@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { todosApi } from '../api/todos.api'
 import { todoKeys } from '../queries/todoKeys'
+import type { ApiError } from '@/shared/lib/apiError'
 import type { Todo, CreateTodoDto, UpdateTodoDto } from '../types/todo.types'
 
 export const useTodos = (userId: string) => {
@@ -14,17 +15,15 @@ export const useTodos = (userId: string) => {
     enabled: !!userId,
   })
 
-  // ── Create ─────────────────────────────────────────────────────────────────
   const createMutation = useMutation({
     mutationFn: (dto: CreateTodoDto) => todosApi.create(userId, dto),
     onSuccess: (newTodo) => {
       queryClient.setQueryData<Todo[]>(key, (old = []) => [newTodo, ...old])
       toast.success('Task added!')
     },
-    onError: () => toast.error('Failed to add task.'),
+    onError: (error: ApiError) => toast.error(error.message),
   })
 
-  // ── Toggle completed (optimistic) ──────────────────────────────────────────
   const toggleMutation = useMutation({
     mutationFn: ({ id, completed }: { id: string; completed: boolean }) =>
       todosApi.update(userId, id, { completed }),
@@ -36,16 +35,15 @@ export const useTodos = (userId: string) => {
       )
       return { snapshot }
     },
-    onError: (_err, _vars, ctx) => {
+    onError: (error: ApiError, _vars, ctx) => {
       queryClient.setQueryData(key, ctx?.snapshot)
-      toast.error('Failed to update task.')
+      toast.error(error.message)
     },
     onSettled: () => queryClient.invalidateQueries({ queryKey: key }),
     onSuccess: (todo) =>
       toast.success(todo.completed ? 'Task completed! 🎉' : 'Task reopened.'),
   })
 
-  // ── Update (optimistic) ────────────────────────────────────────────────────
   const updateMutation = useMutation({
     mutationFn: ({ id, dto }: { id: string; dto: UpdateTodoDto }) =>
       todosApi.update(userId, id, dto),
@@ -57,15 +55,14 @@ export const useTodos = (userId: string) => {
       )
       return { snapshot }
     },
-    onError: (_err, _vars, ctx) => {
+    onError: (error: ApiError, _vars, ctx) => {
       queryClient.setQueryData(key, ctx?.snapshot)
-      toast.error('Failed to update task.')
+      toast.error(error.message)
     },
     onSettled: () => queryClient.invalidateQueries({ queryKey: key }),
     onSuccess: () => toast.success('Task updated.'),
   })
 
-  // ── Delete (optimistic) ────────────────────────────────────────────────────
   const deleteMutation = useMutation({
     mutationFn: (id: string) => todosApi.delete(userId, id),
     onMutate: async (id) => {
@@ -74,15 +71,14 @@ export const useTodos = (userId: string) => {
       queryClient.setQueryData<Todo[]>(key, (old = []) => old.filter((t) => t.id !== id))
       return { snapshot }
     },
-    onError: (_err, _vars, ctx) => {
+    onError: (error: ApiError, _vars, ctx) => {
       queryClient.setQueryData(key, ctx?.snapshot)
-      toast.error('Failed to delete task.')
+      toast.error(error.message)
     },
     onSettled: () => queryClient.invalidateQueries({ queryKey: key }),
     onSuccess: () => toast.success('Task deleted.'),
   })
 
-  // ── Clear completed (optimistic) ───────────────────────────────────────────
   const clearCompletedMutation = useMutation({
     mutationFn: () => todosApi.clearCompleted(userId),
     onMutate: async () => {
@@ -91,9 +87,9 @@ export const useTodos = (userId: string) => {
       queryClient.setQueryData<Todo[]>(key, (old = []) => old.filter((t) => !t.completed))
       return { snapshot }
     },
-    onError: (_err, _vars, ctx) => {
+    onError: (error: ApiError, _vars, ctx) => {
       queryClient.setQueryData(key, ctx?.snapshot)
-      toast.error('Failed to clear completed tasks.')
+      toast.error(error.message)
     },
     onSettled: () => queryClient.invalidateQueries({ queryKey: key }),
     onSuccess: () => toast.success('Completed tasks cleared.'),

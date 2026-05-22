@@ -1,18 +1,27 @@
 import { BrowserRouter } from 'react-router-dom'
 import { QueryClientProvider } from '@tanstack/react-query'
 import { Toaster } from 'sonner'
+import { configureApiClient } from '@/shared/api/apiClient'
+import { useAuthStore } from '@/features/auth'
 import queryClient from '@/shared/lib/queryClient'
 import AppRoutes from './routes/AppRoutes'
 import { ErrorBoundary } from '@/shared/components/common/ErrorBoundary'
 
-// ─── App — provider shell only. No business logic here. ──────────────────────
+configureApiClient({
+  getAccessToken: () => useAuthStore.getState().accessToken,
+  onTokenRefreshed: (token) => useAuthStore.getState().setAccessToken(token),
+  onUnauthorized: () => {
+    useAuthStore.getState().logout()
+    window.location.replace('/login')
+  },
+})
+
 export default function App() {
   return (
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
         <BrowserRouter>
           <AppRoutes />
-          {/* Sonner toast portal — renders outside the component tree */}
           <Toaster
             position="bottom-right"
             theme="dark"

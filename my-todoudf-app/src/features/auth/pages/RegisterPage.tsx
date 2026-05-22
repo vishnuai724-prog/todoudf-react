@@ -150,7 +150,7 @@ export default function RegisterPage() {
                   <Label htmlFor="register-email">Email address</Label>
                   <div className="relative">
                     <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 pointer-events-none" />
-                    <Input id="register-email" type="email" placeholder="you@example.com" className={`pl-9 ${errors.email ? 'border-red-500/50' : ''}`} {...register('email')} />
+                    <Input id="register-email" type="email" autoComplete="email" placeholder="you@example.com" className={`pl-9 ${errors.email ? 'border-red-500/50' : ''}`} {...register('email')} />
                   </div>
                   {errors.email && <p className="text-xs text-red-400">{errors.email.message}</p>}
                 </div>
@@ -163,6 +163,7 @@ export default function RegisterPage() {
                       <Input
                         id="register-password"
                         type={showPass ? 'text' : 'password'}
+                        autoComplete="new-password"
                         placeholder="At least 6 characters"
                         className={`pl-9 pr-10 ${errors.password ? 'border-red-500/50' : ''}`}
                         {...register('password')}
@@ -191,6 +192,7 @@ export default function RegisterPage() {
                       <Input
                         id="register-confirm"
                         type={showConfirm ? 'text' : 'password'}
+                        autoComplete="new-password"
                         placeholder="Repeat your password"
                         className={`pl-9 pr-10 ${errors.confirmPassword ? 'border-red-500/50' : ''}`}
                         {...register('confirmPassword')}

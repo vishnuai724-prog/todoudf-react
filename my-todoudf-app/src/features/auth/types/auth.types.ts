@@ -1,22 +1,20 @@
-// ─── User & Auth types ────────────────────────────────────────────────────────
-
+// ─── Domain model — describes a person, NOT auth artifacts ───────────────────
 export interface User {
   id: string
   firstName: string
   middleName?: string
   lastName: string
   email: string
-  name: string // Full name computed from first, middle, last
+  name: string // computed: "First [Middle] Last"
   dateOfBirth: string
   maritalStatus: string
   religion: string
-  token?: string
-  refreshToken?: string
 }
 
-export interface AuthState {
-  user: User | null
-  isAuthenticated: boolean
+// ─── Auth API types — kept separate from the User model ──────────────────────
+export interface LoginResponse {
+  user: User
+  accessToken: string
 }
 
 export interface LoginCredentials {
@@ -24,13 +22,14 @@ export interface LoginCredentials {
   password: string
 }
 
+// confirmPassword is NOT here — it is a UI-only validation concern.
+// useRegister strips it before calling authApi.register().
 export interface RegisterCredentials {
   firstName: string
   middleName?: string
   lastName: string
   email: string
   password: string
-  confirmPassword: string
   dateOfBirth: string
   maritalStatus: string
   religion: string

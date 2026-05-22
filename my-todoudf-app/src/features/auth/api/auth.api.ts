@@ -1,12 +1,9 @@
 import apiClient from '@/shared/api/apiClient'
-import type { User, LoginCredentials, RegisterCredentials } from '../types/auth.types'
+import type { User, LoginCredentials, RegisterCredentials, LoginResponse } from '../types/auth.types'
 
 export const authApi = {
-  login: async (credentials: LoginCredentials): Promise<{ user: User; accessToken: string }> => {
-    const { data } = await apiClient.post<{ user: User; accessToken: string }>(
-      '/auth/login',
-      credentials,
-    )
+  login: async (credentials: LoginCredentials): Promise<LoginResponse> => {
+    const { data } = await apiClient.post<LoginResponse>('/auth/login', credentials)
     return data
   },
 
@@ -15,7 +12,7 @@ export const authApi = {
   },
 
   logout: async (): Promise<void> => {
-    await apiClient.post('/auth/logout') // clears HttpOnly refresh token cookie
+    await apiClient.post('/auth/logout') // clears HttpOnly refresh-token cookie
   },
 
   getMe: async (): Promise<User> => {

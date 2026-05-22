@@ -28,10 +28,9 @@ export const useAuthStore = create<AuthState>()(
         set({ user: null, accessToken: null, isAuthenticated: false }),
     }),
     {
-      name: 'auth_session',         // localStorage key
-      partialize: (state) => ({     // only persist these fields
+      name: 'auth_session',
+      partialize: (state) => ({
         user: state.user,
-        accessToken: state.accessToken,
         isAuthenticated: state.isAuthenticated,
       }),
     },
